@@ -8,7 +8,7 @@ services:
     ports:
       - 5432:5432
     networks:
-      - medusa-network
+      - dokploy-network
     deploy:
       resources:
         limits:
@@ -27,7 +27,7 @@ services:
     ports:
       - 6379:6379
     networks:
-      - medusa-network
+      - dokploy-network
     volumes:
       - cache-backend-data:/data
     healthcheck:
@@ -39,9 +39,9 @@ services:
   backend-server:
     build: medusa-starter-default
     ports:
-      - 9000:9000
+      - 9000
     networks:
-      - medusa-network
+      - dokploy-network
     deploy:
       resources:
         limits:
@@ -56,8 +56,8 @@ services:
       - backend-server-data:/data
     environment:
       NODE_ENV: CI
-      STORE_CORS: http://localhost:8000
-      ADMIN_CORS: http://localhost:8000,http://localhost:9000
+      STORE_CORS: http://localhost:8000,https://dashboard.futuretools.app
+      ADMIN_CORS: http://localhost:8000,http://localhost:9000,https://dashboard.futuretools.app,https://api.futuretools.app
       REDIS_URL: redis://redis:6379
       CACHE_REDIS_URL: redis://redis:6379
       EVENTS_REDIS_URL: redis://redis:6379
@@ -67,6 +67,12 @@ services:
       MEDUSA_CREATE_ADMIN_USER: true
       MEDUSA_ADMIN_EMAIL: admin@medusa-test.com
       MEDUSA_ADMIN_PASSWORD: supersecret
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.medusa-api.rule=Host(`api.futuretools.app`)"
+      - "traefik.http.routers.medusa-api.entrypoints=websecure"
+      - "traefik.http.routers.medusa-api.tls.certResolver=letsencrypt"
+      - "traefik.http.services.medusa-api.loadbalancer.server.port=9000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
       interval: 10s
@@ -75,7 +81,8 @@ services:
       retries: 5
 
 networks:
-  medusa-network:
+  dokploy-network:
+    external: true
 
 volumes:
   postgres-data:
