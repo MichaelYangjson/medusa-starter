@@ -7,6 +7,8 @@ services:
       POSTGRES_DB: medusa-starter
     ports:
       - 5432:5432
+    networks:
+      - dokploy-network
     deploy:
       resources:
         limits:
@@ -24,6 +26,8 @@ services:
     image: redis:7
     ports:
       - 6379:6379
+    networks:
+      - dokploy-network
     volumes:
       - cache-backend-data:/data
     healthcheck:
@@ -35,7 +39,9 @@ services:
   backend-server:
     build: medusa-starter-default
     ports:
-      - 9000:9000
+      - 9000
+    networks:
+      - dokploy-network
     deploy:
       resources:
         limits:
@@ -50,8 +56,8 @@ services:
       - backend-server-data:/data
     environment:
       NODE_ENV: CI
-      STORE_CORS: http://localhost:8000
-      ADMIN_CORS: http://localhost:8000,http://localhost:9000
+      STORE_CORS: http://localhost:8000,https://api.futuretools.app
+      ADMIN_CORS: http://localhost:8000,http://localhost:9000,https://api.futuretools.app
       REDIS_URL: redis://redis:6379
       CACHE_REDIS_URL: redis://redis:6379
       EVENTS_REDIS_URL: redis://redis:6379
@@ -59,14 +65,24 @@ services:
       DATABASE_URL: postgres://medusa-starter:medusa-password@postgres/medusa-starter?ssl_mode=disable
       POSTGRES_URL: postgres://medusa-starter:medusa-password@postgres/medusa-starter?ssl_mode=disable
       MEDUSA_CREATE_ADMIN_USER: true
-      MEDUSA_ADMIN_EMAIL: admin@medusa-test.com
-      MEDUSA_ADMIN_PASSWORD: supersecret
+      MEDUSA_ADMIN_EMAIL: albertyang123456@gmail.com
+      MEDUSA_ADMIN_PASSWORD: as123456
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`api.futuretools.app`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls=true"
+      - "traefik.http.services.api.loadbalancer.server.port=9000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
       interval: 10s
       timeout: 5s
       start_period: 10s
       retries: 5
+
+networks:
+  dokploy-network:
+    external: true
 
 volumes:
   postgres-data:
