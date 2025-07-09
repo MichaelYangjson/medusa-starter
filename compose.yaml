@@ -65,11 +65,12 @@ services:
       # CORS配置
       STORE_CORS: https://api.futuretools.app,https://admin.futuretools.app
       ADMIN_CORS: https://api.futuretools.app,https://admin.futuretools.app
+      AUTH_CORS: https://api.futuretools.app,https://admin.futuretools.app
       # Redis配置
       REDIS_URL: redis://redis:6379
       CACHE_REDIS_URL: redis://redis:6379
       EVENTS_REDIS_URL: redis://redis:6379
-      WORKER_REDIS_URL: redis://redis:6379
+      WE_REDIS_URL: redis://redis:6379
       # 数据库配置
       DATABASE_URL: postgres://medusa-starter:medusa-password@postgres:5432/medusa-starter?sslmode=disable
       POSTGRES_URL: postgres://medusa-starter:medusa-password@postgres:5432/medusa-starter?sslmode=disable
