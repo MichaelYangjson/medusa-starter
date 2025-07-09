@@ -87,25 +87,31 @@ services:
 
     labels:
       - "traefik.enable=true"
-      # API域名路由配置 - 处理所有API路径
+      # API域名路由配置
       - "traefik.http.routers.medusa-api.rule=Host(`api.futuretools.app`)"
       - "traefik.http.routers.medusa-api.entrypoints=websecure"
       - "traefik.http.routers.medusa-api.tls.certResolver=letsencrypt"
+      - "traefik.http.routers.medusa-api.service=medusa-api"
       - "traefik.http.services.medusa-api.loadbalancer.server.port=9000"
-      # Admin域名路由配置 - 重定向到/app路径
+      # Admin域名路由配置
       - "traefik.http.routers.medusa-admin.rule=Host(`admin.futuretools.app`)"
       - "traefik.http.routers.medusa-admin.entrypoints=websecure"
       - "traefik.http.routers.medusa-admin.tls.certResolver=letsencrypt"
-      - "traefik.http.routers.medusa-admin.middlewares=admin-redirect"
+      - "traefik.http.routers.medusa-admin.service=medusa-admin"
       - "traefik.http.services.medusa-admin.loadbalancer.server.port=9000"
-      # 中间件：将admin域名重定向到/app路径
-      - "traefik.http.middlewares.admin-redirect.redirectregex.regex=^https://admin.futuretools.app/?$$"
-      - "traefik.http.middlewares.admin-redirect.redirectregex.replacement=https://admin.futuretools.app/app"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:9000/health",
+        ]
       interval: 30s
       timeout: 10s
-      start_period: 30s
+      start_period: 60s
       retries: 3
 
 networks:
