@@ -66,8 +66,8 @@ services:
       EVENTS_REDIS_URL: redis://redis:6379
       WORKER_REDIS_URL: redis://redis:6379
       # 数据库配置
-      DATABASE_URL: postgres://medusa-starter:medusa-password@postgres:5432/medusa-starter
-      POSTGRES_URL: postgres://medusa-starter:medusa-password@postgres:5432/medusa-starter
+      DATABASE_URL: postgres://medusa-starter:medusa-password@postgres:5432/medusa-starter?sslmode=disable
+      POSTGRES_URL: postgres://medusa-starter:medusa-password@postgres:5432/medusa-starter?sslmode=disable
       # Admin用户配置
       MEDUSA_CREATE_ADMIN_USER: true
       MEDUSA_ADMIN_EMAIL: albertyang123456@gmail.com
@@ -75,6 +75,7 @@ services:
       # JWT配置
       JWT_SECRET: PuBDURTvGFEkedRB2SgGQgHD842u8Mw7CwUcMCiGF7Y=
       COOKIE_SECRET: PuBDURTvGFEkedRB2SgGQgHD842u8Mw7CwUcMCiGF7Y=
+
     labels:
       - "traefik.enable=true"
       # API域名路由配置 - 处理所有API路径
