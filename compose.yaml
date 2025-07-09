@@ -39,8 +39,8 @@ services:
 
   backend-server:
     build: medusa-starter-default
-    ports:
-      - 9000
+    expose:
+      - "9000"
     networks:
       - dokploy-network
     deploy:
@@ -84,21 +84,29 @@ services:
       # JWT配置
       JWT_SECRET: PuBDURTvGFEkedRB2SgGQgHD842u8Mw7CwUcMCiGF7Y=
       COOKIE_SECRET: PuBDURTvGFEkedRB2SgGQgHD842u8Mw7CwUcMCiGF7Y=
-
     labels:
       - "traefik.enable=true"
-      # API域名路由配置
+      # API域名路由配置 - Store API和Admin API
       - "traefik.http.routers.medusa-api.rule=Host(`api.futuretools.app`)"
       - "traefik.http.routers.medusa-api.entrypoints=websecure"
       - "traefik.http.routers.medusa-api.tls.certResolver=letsencrypt"
-      - "traefik.http.routers.medusa-api.service=medusa-api"
       - "traefik.http.services.medusa-api.loadbalancer.server.port=9000"
-      # Admin域名路由配置
+      # HTTP重定向到HTTPS
+      - "traefik.http.routers.medusa-api-http.rule=Host(`api.futuretools.app`)"
+      - "traefik.http.routers.medusa-api-http.entrypoints=web"
+      - "traefik.http.routers.medusa-api-http.middlewares=redirect-to-https"
+      # Admin域名路由配置 - 直接访问/app路径
       - "traefik.http.routers.medusa-admin.rule=Host(`admin.futuretools.app`)"
       - "traefik.http.routers.medusa-admin.entrypoints=websecure"
       - "traefik.http.routers.medusa-admin.tls.certResolver=letsencrypt"
-      - "traefik.http.routers.medusa-admin.service=medusa-admin"
       - "traefik.http.services.medusa-admin.loadbalancer.server.port=9000"
+      # Admin HTTP重定向到HTTPS
+      - "traefik.http.routers.medusa-admin-http.rule=Host(`admin.futuretools.app`)"
+      - "traefik.http.routers.medusa-admin-http.entrypoints=web"
+      - "traefik.http.routers.medusa-admin-http.middlewares=redirect-to-https"
+      # HTTPS重定向中间件
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
 
 networks:
   dokploy-network:
