@@ -63,9 +63,9 @@ services:
       MEDUSA_BACKEND_URL: https://api.futuretools.app
       MEDUSA_ADMIN_BACKEND_URL: https://api.futuretools.app
       # CORS配置
-      STORE_CORS: https://api.futuretools.app,https://admin.futuretools.app
-      ADMIN_CORS: https://api.futuretools.app,https://admin.futuretools.app
-      AUTH_CORS: https://api.futuretools.app,https://admin.futuretools.app
+      STORE_CORS: https://api.futuretools.app
+      ADMIN_CORS: https://api.futuretools.app
+      AUTH_CORS: https://api.futuretools.app
       # Redis配置
       REDIS_URL: redis://redis:6379
       CACHE_REDIS_URL: redis://redis:6379
@@ -88,18 +88,13 @@ services:
       - "traefik.enable=true"
       # Debug信息
       - "traefik.docker.network=dokploy-network"
-      # 统一服务定义
+      # 服务定义
       - "traefik.http.services.medusa-backend.loadbalancer.server.port=9000"
-      # API域名配置
-      - "traefik.http.routers.medusa-api.rule=Host(`api.futuretools.app`)"
-      - "traefik.http.routers.medusa-api.entrypoints=web,websecure"
-      - "traefik.http.routers.medusa-api.tls.certResolver=letsencrypt"
-      - "traefik.http.routers.medusa-api.service=medusa-backend"
-      # Admin域名配置
-      - "traefik.http.routers.medusa-admin.rule=Host(`admin.futuretools.app`)"
-      - "traefik.http.routers.medusa-admin.entrypoints=web,websecure"
-      - "traefik.http.routers.medusa-admin.tls.certResolver=letsencrypt"
-      - "traefik.http.routers.medusa-admin.service=medusa-backend"
+      # 单域名配置
+      - "traefik.http.routers.medusa.rule=Host(`api.futuretools.app`)"
+      - "traefik.http.routers.medusa.entrypoints=web,websecure"
+      - "traefik.http.routers.medusa.tls.certResolver=letsencrypt"
+      - "traefik.http.routers.medusa.service=medusa-backend"
 
 networks:
   dokploy-network:
