@@ -5,6 +5,9 @@ services:
       POSTGRES_USER: medusa-starter
       POSTGRES_PASSWORD: medusa-password
       POSTGRES_DB: medusa-starter
+      # 明确禁用SSL
+      POSTGRES_INITDB_ARGS: "--auth-host=md5 --auth-local=trust"
+    command: ["postgres", "-c", "ssl=off"]
     # 移除端口映射，只在容器内部使用
     networks:
       - dokploy-network
@@ -54,6 +57,8 @@ services:
       - backend-server-data:/data
     environment:
       NODE_ENV: production
+      # SSL禁用配置
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
       # 域名配置
       MEDUSA_BACKEND_URL: https://api.futuretools.app
       MEDUSA_ADMIN_BACKEND_URL: https://api.futuretools.app
