@@ -5,8 +5,7 @@ services:
       POSTGRES_USER: medusa-starter
       POSTGRES_PASSWORD: medusa-password
       POSTGRES_DB: medusa-starter
-    ports:
-      - 5432:5432
+    # 移除端口映射，只在容器内部使用
     networks:
       - dokploy-network
     deploy:
@@ -24,8 +23,7 @@ services:
 
   redis:
     image: redis:7
-    ports:
-      - 6379:6379
+    # 移除端口映射，只在容器内部使用
     networks:
       - dokploy-network
     volumes:
